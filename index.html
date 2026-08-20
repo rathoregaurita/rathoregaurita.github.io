@@ -21,7 +21,7 @@
       
       <nav class="app-nav" id="main-nav">
         <button class="nav-btn active" data-target="dashboard">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/></svg>
           Dashboard
         </button>
         <button class="nav-btn" data-target="balance-lab">
@@ -29,11 +29,11 @@
           Balance Lab
         </button>
         <button class="nav-btn" data-target="photon-lab">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l"/></svg>
           Photon Lab
         </button>
         <button class="nav-btn" data-target="sandbox">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7"/></svg>
           Sandbox
         </button>
         <button class="nav-btn" data-target="explainers">
@@ -66,7 +66,7 @@
 
       <div class="header-status">
         <!-- Curriculum Badge -->
-        <div class="status-badge grade-badge" id="curriculum-indicator" style="background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); border-radius: var(--border-radius-sm); padding: 0.2rem 0.5rem; display: flex; gap: 0.3rem; align-items: center; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+        <div class="status-badge grade-badge" id="curriculum-indicator" style="background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); border-radius: var(--border-radius-sm); padding: 0.4rem 0.6rem; display: flex; gap: 0.6rem; align-items: center;">
           <span class="badge-label" style="color: hsl(var(--accent-pink));">Curriculum</span>
           <span class="badge-val" id="global-curriculum-val" style="color: hsl(var(--accent-pink));">-</span>
         </div>
@@ -97,12 +97,12 @@
   <div id="onboarding-modal" class="modal-overlay">
     <div class="modal-content glass-card onboarding-card" style="max-width: 500px; text-align: center;">
       <h2 style="font-size: 2rem; color: hsl(var(--accent-pink)); margin-bottom: 0.5rem; font-weight: 800;">✦ Welcome to EquiliPrism! ✦</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Let's customize your adaptive learning adventure. Select your country and grade level to align with your school's curriculum!</p>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Let's customize your adaptive learning adventure. Select your country and grade level to align with your school's standards.</p>
       
       <form id="onboarding-form" style="display: flex; flex-direction: column; gap: 1.2rem; text-align: left;">
         <div>
           <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">Select Your Country:</label>
-          <select id="onboarding-country" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm); font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
+          <select id="onboarding-country" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm);">
             <option value="" disabled selected style="background: var(--bg-color);">-- Choose Country --</option>
             <option value="US" style="background: var(--bg-color);">United States (Common Core)</option>
             <option value="UK" style="background: var(--bg-color);">United Kingdom (National Curriculum)</option>
@@ -113,7 +113,7 @@
 
         <div>
           <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">Select Your Grade Level:</label>
-          <select id="onboarding-grade" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm); font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
+          <select id="onboarding-grade" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm);">
             <option value="" disabled selected style="background: var(--bg-color);">-- Choose Grade --</option>
             <option value="-1" style="background: var(--bg-color);">Preschool / Pre-K (Age 4-5)</option>
             <option value="0" style="background: var(--bg-color);">Kindergarten (Age 5-6)</option>
@@ -134,7 +134,7 @@
 
         <div>
           <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">Select Your Learning Style:</label>
-          <select id="onboarding-style" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm); font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
+          <select id="onboarding-style" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm);">
             <option value="" disabled selected style="background: var(--bg-color);">-- Choose Learning Style --</option>
             <option value="visualizer" style="background: var(--bg-color);">🎨 Visual Learner (Art & Diagrams)</option>
             <option value="builder" style="background: var(--bg-color);">🛠️ Kinesthetic Learner (Hands-on & Mechanics)</option>
@@ -144,7 +144,7 @@
 
         <div>
           <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">Select Your Theme Mode:</label>
-          <select id="onboarding-theme" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm); font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
+          <select id="onboarding-theme" required style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-main); border-radius: var(--border-radius-sm);">
             <option value="" disabled selected style="background: var(--bg-color);">-- Choose Theme Mode --</option>
             <option value="theme-space-dark" style="background: var(--bg-color);">🌌 Dark Mode</option>
             <option value="theme-light" style="background: var(--bg-color);">☀️ Light Mode</option>
@@ -154,7 +154,7 @@
           </select>
         </div>
 
-        <button type="submit" class="puzzle-btn primary" style="width: 100%; padding: 0.8rem; font-size: 1rem; justify-content: center; font-weight: 700; margin-top: 0.5rem; background: linear-gradient(to right, hsl(var(--accent-pink)), hsl(var(--accent-violet))); border: none; box-shadow: 0 4px 15px rgba(236,72,153,0.35);">
+        <button type="submit" class="puzzle-btn primary" style="width: 100%; padding: 0.8rem; font-size: 1rem; justify-content: center; font-weight: 700; margin-top: 0.5rem; background: linear-gradient(90deg, hsl(var(--accent-pink)), hsl(var(--accent-cyan)));">
           Start Learning 🚀
         </button>
       </form>
@@ -162,6 +162,13 @@
   </div>
 
   <!-- Main ES6 JS Application -->
+  <script type="module" src="assets/js/audioManager.js"></script>
+  <script type="module" src="assets/js/soundtrack.js"></script>
+  <script type="module" src="assets/js/videos.js"></script>
+  <script type="module" src="assets/js/creativeSandbox.js"></script>
+  <script type="module" src="assets/js/sparkyGuide.js"></script>
+  <script type="module" src="assets/js/sparkyWardrobe.js"></script>
+  <script type="module" src="assets/js/bugs.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>

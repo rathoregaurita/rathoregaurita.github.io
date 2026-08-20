@@ -1,4 +1,4 @@
-import { audioManager } from '../hooks/audio-manager.js';
+import { audioManager } from './audioManager.js';
 export class Soundtrack {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
@@ -132,7 +132,7 @@ export class Soundtrack {
           <h2>✦ Audio Deck ✦</h2>
           <div class="record-vinyl-container" style="position: relative; width: 160px; height: 160px; margin: 0.5rem 0;">
             <div class="record-vinyl ${audioManager.isPlaying ? 'spinning' : ''}"><div class="record-center"><div class="record-label-groove"></div></div></div>
-            <div class="tone-arm" style="position: absolute; top: -12px; right: 0; width: 60px; height: 90px; transform-origin: 45px 12px; transform: rotate(${audioManager.isPlaying ? '18deg' : '0deg'});">
+            <div class="tone-arm" style="position: absolute; top: -12px; right: 0; width: 60px; height: 90px; transform-origin: 45px 12px; transform: rotate(${audioManager.isPlaying ? '18deg' : '0deg'})">
               <svg viewBox="0 0 100 150" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="3"><path d="M 60 15 L 60 60 L 20 120"/><circle cx="60" cy="15" r="8" fill="#1e293b"/></svg>
             </div>
           </div>
@@ -155,9 +155,9 @@ export class Soundtrack {
           <h3>Study Playlist Customizer</h3>
           <div style="border: 1px solid var(--card-border); border-radius: var(--border-radius-sm); max-height: 240px; overflow-y: auto;">
             ${audioManager.tracks.map((t, idx) => `
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-bottom: 1px solid var(--card-border); background: ${audioManager.currentTrackIdx === idx ? 'rgba(147, 51, 234, 0.08)' : 'transparent'};">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-bottom: 1px solid var(--card-border); background: ${audioManager.currentTrackIdx === idx ? 'rgba(0,0,0,0.06)' : 'transparent'};">
                 <div style="display: flex; align-items: center; gap: 0.8rem; flex: 1;">
-                  <button class="playlist-row-play" data-index="${idx}">${audioManager.currentTrackIdx === idx && isPlaying ? '❚❚' : '▶'}</button>
+                  <button class="playlist-row-play" data-index="${idx}">${audioManager.currentTrackIdx === idx && audioManager.isPlaying ? '❚❚' : '▶'}</button>
                   <div><span>${t.title}</span><br><small>${t.artist}</small></div>
                 </div>
                 ${t.id.startsWith('custom-') ? `<button class="playlist-row-delete" data-id="${t.id}">✕</button>` : ''}

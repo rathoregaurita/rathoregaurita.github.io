@@ -104,7 +104,28 @@ function hydrateNavFromHash() {
   return hash;
 }
 
+function injectGlobalSVGDefs() {
+  // Inject a hidden SVG defs block so all inline SVGs can reference fills/gradients like url(#sparkyGlow)
+  if (document.getElementById('equiliprism-global-svg-defs')) return;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('id', 'equiliprism-global-svg-defs');
+  svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.left = '-9999px'; svg.style.top = '-9999px';
+  const defs = document.createElementNS(svgNS, 'defs');
+  const grad = document.createElementNS(svgNS, 'radialGradient'); grad.setAttribute('id', 'sparkyGlow');
+  const stop1 = document.createElementNS(svgNS, 'stop'); stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', '#7c3aed');
+  const stop2 = document.createElementNS(svgNS, 'stop'); stop2.setAttribute('offset', '60%'); stop2.setAttribute('stop-color', '#6ee7b7');
+  const stop3 = document.createElementNS(svgNS, 'stop'); stop3.setAttribute('offset', '100%'); stop3.setAttribute('stop-color', '#60a5fa');
+  grad.appendChild(stop1); grad.appendChild(stop2); grad.appendChild(stop3);
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+  document.body.appendChild(svg);
+}
+
 function initApp() {
+  // ensure global defs available before any SVG renders
+  try { injectGlobalSVGDefs(); } catch (e) { console.warn('inject defs failed', e); }
   initNav();
   initSparkyWidget();
   const initial = hydrateNavFromHash() || 'dashboard';

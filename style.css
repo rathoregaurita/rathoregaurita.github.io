@@ -1,0 +1,36 @@
+/* Minimal style.css to restore core variables and layout for EquiliPrism
+   This file provides CSS variables used across the templates and basic nav/header styles.
+   It is intentionally compact — feel free to customize colors. */
+:root{
+  --accent-pink: 330 85% 60%; /* hsl hue-sat-lightness stored as vars for hsl(var(--accent-pink)) */
+  --accent-cyan: 190 80% 50%;
+  --accent-violet: 260 70% 55%;
+  --bg-color: #071124;
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.06);
+  --text-main: #e6eef8;
+  --text-muted: #9fb0c8;
+  --border-radius-sm: 8px;
+}
+html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:linear-gradient(180deg,#041026 0%, #071124 100%); color:var(--text-main);}
+.app-container{max-width:1200px;margin:0 auto;padding:0 1rem;}
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;gap:1rem}
+.header-logo{display:flex;align-items:center;gap:0.6rem}
+.logo-icon{font-size:1.4rem;color:hsl(var(--accent-pink));}
+.app-nav{display:flex;gap:0.4rem;flex-wrap:wrap}
+.nav-btn{background:transparent;border:1px solid transparent;color:var(--text-muted);padding:0.5rem 0.7rem;border-radius:8px;display:flex;align-items:center;gap:0.5rem;cursor:pointer}
+.nav-btn svg{width:18px;height:18px}
+.nav-btn.active{background:linear-gradient(90deg,hsl(var(--accent-pink)), hsl(var(--accent-cyan)));color:#051223;border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,0.35)}
+.header-status{display:flex;gap:0.6rem;align-items:center}
+.glass-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--border-radius-sm);padding:1rem}
+.loading-spinner{padding:2rem;text-align:center;color:var(--text-muted)}
+/* utility */
+button{font-family:inherit}
+.sparky-character{display:block}
+/* ensure app-view is visible and scrollable */
+.app-main{padding:1.2rem 0 3rem;min-height:60vh}
+
+/* small responsive */
+@media (max-width:700px){
+  .app-nav{gap:0.25rem}
+}

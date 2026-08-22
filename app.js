@@ -1,150 +1,248 @@
-// Minimal SPA bootstrap for EquiliPrism
-// - Wires top navigation buttons (.nav-btn)
-// - Lazy-loads page modules from assets/js
-// - Initializes Sparky widget and some global inits
+// EquiliPrism Root Application Controller
+import { adaptiveEngine } from './hooks/adaptive-engine.js';
+import { Dashboard } from './components/dashboard.js';
+import { BalanceLab } from './components/balance-lab.js';
+import { PhotonLab } from './components/photon-lab.js';
+import { CreativeSandbox } from './components/sandbox.js';
+import { ConceptStudio } from './components/explainers.js';
+import { SparkyGuide } from './components/sparky.js';
+import { SparkyWardrobe } from './components/wardrobe.js';
+import { Videos } from './components/videos.js';
+import { Bugs } from './components/bugs.js';
 
-const ROUTES = {
-  dashboard: { render: (container) => {
-    container.innerHTML = `
-      <div style="max-width:1100px;margin:2rem auto;">
-        <h1>Welcome to EquiliPrism</h1>
-        <p style="color:var(--text-muted);">Interactive math & science puzzles. Use the left navigation to open a lab or tool.</p>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin-top:1.2rem;">
-          <div class="glass-card" style="padding:1rem;"><h3>Get Started</h3><p>Pick a lab from the left.</p></div>
-          <div class="glass-card" style="padding:1rem;"><h3>Wardrobe</h3><p>Customize Sparky's look.</p></div>
-          <div class="glass-card" style="padding:1rem;"><h3>Audio Deck</h3><p>Play study tracks & manage playlist.</p></div>
-        </div>
-      </div>
-    `;
-  }},
-  'balance-lab': { path: 'assets/js/creativeSandbox.js', className: 'CreativeSandbox' },
-  'photon-lab': { path: 'assets/js/creativeSandbox.js', className: 'CreativeSandbox' },
-  'sandbox': { path: 'assets/js/creativeSandbox.js', className: 'CreativeSandbox' },
-  'explainers': { path: 'assets/js/sparkyGuide.js', className: 'SparkyGuide' },
-  'wardrobe': { path: 'assets/js/sparkyWardrobe.js', className: 'SparkyWardrobe' },
-  'videos': { path: 'assets/js/videos.js', className: 'Videos' },
-  'bugs': { path: 'assets/js/bugs.js', className: 'Bugs' },
-  'soundtrack': { path: 'assets/js/soundtrack.js', className: 'Soundtrack' }
-};
+class App {
+  constructor() {
+    this.activeTab = 'dashboard';
+    this.activeComponent = null;
+    
+    // Cycle themes: space-dark -> light -> cyber -> sunset -> ocean -> space-dark
+    this.themes = ['theme-space-dark', 'theme-light', 'theme-cyber', 'theme-sunset', 'theme-ocean'];
+    
+    const savedTheme = localStorage.getItem('equiliprism_active_theme') || 'theme-space-dark';
+    this.activeThemeIdx = this.themes.indexOf(savedTheme);
+    if (this.activeThemeIdx === -1) this.activeThemeIdx = 0;
+    
+    // Apply initial theme
+    document.body.classList.remove('theme-light', 'theme-cyber', 'theme-space-dark', 'theme-sunset', 'theme-ocean');
+    document.body.classList.add(this.themes[this.activeThemeIdx]);
 
-let currentInstance = null;
+    // Elements
+    this.appView = document.getElementById('app-view');
+    this.navButtons = document.querySelectorAll('#main-nav .nav-btn');
+    this.diffValEl = document.getElementById('global-difficulty-val');
+    this.styleValEl = document.getElementById('global-style-val');
+    this.curriculumValEl = document.getElementById('global-curriculum-val');
 
-function queryId(id) { return document.getElementById(id); }
-
-async function loadRoute(target) {
-  const container = queryId('app-view');
-  if (!container) return;
-  // destroy previous
-  if (currentInstance && typeof currentInstance.destroy === 'function') {
-    try { currentInstance.destroy(); } catch (e) { console.warn('destroy failed', e); }
+    this.init();
   }
-  container.innerHTML = '';
-  const route = ROUTES[target] || ROUTES.dashboard;
-  if (route.render) {
-    route.render(container);
-    currentInstance = { destroy: () => {} };
-    return;
-  }
-  try {
-    const mod = await import(`./${route.path}`);
-    const Cls = mod[route.className] || mod.default;
-    if (typeof Cls === 'function') {
-      // create a wrapper container inside #app-view
-      const mount = document.createElement('div'); mount.id = `${target}-mount`; container.appendChild(mount);
-      // instantiate
-      currentInstance = new Cls(mount.id);
-      if (typeof currentInstance.render === 'function') currentInstance.render();
-    } else {
-      container.innerHTML = `<pre style="padding:1rem;">Module loaded but did not export ${route.className}</pre>`;
-      currentInstance = { destroy: () => {} };
-    }
-  } catch (e) {
-    console.error('Failed to load route', target, e);
-    container.innerHTML = `<div style="padding:2rem; color:var(--text-muted)">Failed to load <strong>${target}</strong>: ${e.message}</div>`;
-    currentInstance = { destroy: () => {} };
-  }
-}
 
-function setActiveNav(button) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (button) button.classList.add('active');
-}
-
-function initNav() {
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const target = btn.getAttribute('data-target');
-      setActiveNav(btn);
-      // small delay to allow active style to show
-      loadRoute(target);
+  init() {
+    // 1. Set up Navigation Click handlers
+    this.navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        this.navigateTo(target);
+      });
     });
-  });
-}
 
-async function initSparkyWidget() {
-  const mountId = 'sparky-widget-container';
-  const mount = document.getElementById(mountId);
-  if (!mount) return;
-  try {
-    const mod = await import('./assets/js/sparkyGuide.js');
-    const Sparky = mod.SparkyGuide || mod.default;
-    if (typeof Sparky === 'function') {
-      const instance = new Sparky(mountId);
-      if (typeof instance.render === 'function') instance.render();
-      // expose for debugging
-      window.sparkyWidget = instance;
+
+
+    // 3. Listen for internal SPA navigation events
+    window.addEventListener('navigateToTab', (e) => {
+      this.navigateTo(e.detail);
+    });
+
+    // 4. Listen for adaptive engine changes to update header state
+    window.addEventListener('equiliprismStateChanged', (e) => {
+      this.updateHeader(e.detail);
+      
+      // Auto-open onboarding if profile is cleared (e.g. on Reset Progress)
+      const profile = e.detail.profile;
+      if (!profile || !profile.country || !profile.grade) {
+        const onboardingModal = document.getElementById('onboarding-modal');
+        if (onboardingModal && !onboardingModal.classList.contains('active')) {
+          onboardingModal.classList.add('active');
+        }
+      }
+    });
+
+
+
+    // 5. Initialize the global Sparky floating guide widget
+    this.sparkyWidget = new SparkyGuide('sparky-widget-container');
+
+    // 6. Bind Onboarding Modal submit handler
+    const onboardingModal = document.getElementById('onboarding-modal');
+    const onboardingForm = document.getElementById('onboarding-form');
+    if (onboardingForm) {
+      onboardingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const country = document.getElementById('onboarding-country').value;
+        const grade = document.getElementById('onboarding-grade').value;
+        const style = document.getElementById('onboarding-style').value;
+        const theme = document.getElementById('onboarding-theme').value;
+        if (country && grade && style && theme) {
+          adaptiveEngine.setProfile(country, grade);
+          adaptiveEngine.setCognitiveStyle(style);
+          this.setTheme(theme);
+          if (onboardingModal) onboardingModal.classList.remove('active');
+          // Reload the current view to render appropriate grade level questions and styling
+          this.navigateTo(this.activeTab);
+        }
+      });
     }
-  } catch (e) { console.warn('Sparky widget failed to init', e); }
+
+    // 6b. Bind Curriculum Indicator click to open onboarding modal (pre-filled with active state)
+    const curriculumIndicator = document.getElementById('curriculum-indicator');
+    if (curriculumIndicator) {
+      curriculumIndicator.addEventListener('click', () => {
+        const countrySelect = document.getElementById('onboarding-country');
+        const gradeSelect = document.getElementById('onboarding-grade');
+        const styleSelect = document.getElementById('onboarding-style');
+        const themeSelect = document.getElementById('onboarding-theme');
+        const profileState = adaptiveEngine.state.profile || {};
+        
+        if (countrySelect && profileState.country) {
+          countrySelect.value = profileState.country;
+        }
+        if (gradeSelect && profileState.grade !== undefined && profileState.grade !== null) {
+          gradeSelect.value = profileState.grade;
+        }
+        if (styleSelect && adaptiveEngine.state.cognitiveStyle) {
+          styleSelect.value = adaptiveEngine.state.cognitiveStyle;
+        }
+        if (themeSelect) {
+          themeSelect.value = localStorage.getItem('equiliprism_active_theme') || 'theme-space-dark';
+        }
+        
+        if (onboardingModal) {
+          onboardingModal.classList.add('active');
+        }
+      });
+    }
+
+    // Check if profile needs onboarding
+    const profile = adaptiveEngine.state.profile;
+    if (!profile || !profile.country || !profile.grade) {
+      if (onboardingModal) {
+        onboardingModal.classList.add('active');
+      }
+    }
+
+    // 7. Draw active headers and default tab
+    this.updateHeader(adaptiveEngine.state);
+    this.navigateTo(this.activeTab);
+  }
+
+  // Handle SPA component switching
+  navigateTo(tabId) {
+    // Clean up previous active component
+    if (this.activeComponent && typeof this.activeComponent.destroy === 'function') {
+      this.activeComponent.destroy();
+    }
+
+    this.activeTab = tabId;
+
+    // Update nav button active classes
+    this.navButtons.forEach(btn => {
+      if (btn.getAttribute('data-target') === tabId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // Render corresponding component
+    this.appView.innerHTML = '<div class="loading-spinner">Loading Playground...</div>';
+    
+    // Smooth transition entry
+    this.appView.style.opacity = 0;
+    this.appView.style.transform = 'translateY(8px)';
+
+    setTimeout(() => {
+      switch (tabId) {
+        case 'dashboard':
+          this.activeComponent = new Dashboard('app-view', this.navigateTo.bind(this));
+          break;
+        case 'balance-lab':
+          this.activeComponent = new BalanceLab('app-view');
+          break;
+        case 'photon-lab':
+          this.activeComponent = new PhotonLab('app-view');
+          break;
+        case 'sandbox':
+          this.activeComponent = new CreativeSandbox('app-view');
+          break;
+        case 'explainers':
+          this.activeComponent = new ConceptStudio('app-view');
+          break;
+        case 'wardrobe':
+          this.activeComponent = new SparkyWardrobe('app-view');
+          break;
+        case 'videos':
+          this.activeComponent = new Videos('app-view');
+          break;
+        case 'bugs':
+          this.activeComponent = new Bugs('app-view');
+          break;
+        default:
+          this.navigateTo('dashboard');
+          return;
+      }
+      
+      this.activeComponent.render();
+      
+      this.appView.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      this.appView.style.opacity = 1;
+      this.appView.style.transform = 'translateY(0)';
+    }, 150);
+  }
+
+  // Set active theme and update UI elements
+  setTheme(themeName) {
+    if (!this.themes.includes(themeName)) return;
+
+    // Remove old theme classes
+    document.body.classList.remove('theme-light', 'theme-cyber', 'theme-space-dark', 'theme-sunset', 'theme-ocean');
+    document.body.classList.add(themeName);
+
+    this.activeThemeIdx = this.themes.indexOf(themeName);
+    localStorage.setItem('equiliprism_active_theme', themeName);
+
+    // Sync dashboard theme dropdown if it exists on page
+    const dashboardSwitcher = document.getElementById('dashboard-theme-switcher');
+    if (dashboardSwitcher) {
+      dashboardSwitcher.value = themeName;
+    }
+  }
+
+  // Update header status indicators
+  updateHeader(state) {
+    if (this.diffValEl) {
+      this.diffValEl.textContent = state.difficulty.toFixed(1);
+    }
+    if (this.styleValEl) {
+      this.styleValEl.textContent = state.cognitiveStyle.charAt(0).toUpperCase() + state.cognitiveStyle.slice(1);
+      
+      // Update color class based on style
+      const badge = document.getElementById('style-indicator');
+      if (badge) {
+        badge.className = `status-badge style-badge ${state.cognitiveStyle}`;
+      }
+    }
+    if (this.curriculumValEl && state.profile) {
+      const country = state.profile.country || '-';
+      const grade = state.profile.grade !== null && state.profile.grade !== undefined ? `Grade ${state.profile.grade}` : '-';
+      this.curriculumValEl.textContent = `${country} - ${grade}`;
+    }
+  }
 }
 
-function hydrateNavFromHash() {
-  const hash = location.hash.replace('#','');
-  if (!hash) return 'dashboard';
-  // allow linking like #wardrobe
-  return hash;
-}
-
-function injectGlobalSVGDefs() {
-  // Inject a hidden SVG defs block so all inline SVGs can reference fills/gradients like url(#sparkyGlow)
-  if (document.getElementById('equiliprism-global-svg-defs')) return;
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('id', 'equiliprism-global-svg-defs');
-  svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.left = '-9999px'; svg.style.top = '-9999px';
-  const defs = document.createElementNS(svgNS, 'defs');
-  const grad = document.createElementNS(svgNS, 'radialGradient'); grad.setAttribute('id', 'sparkyGlow');
-  const stop1 = document.createElementNS(svgNS, 'stop'); stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', '#7c3aed');
-  const stop2 = document.createElementNS(svgNS, 'stop'); stop2.setAttribute('offset', '60%'); stop2.setAttribute('stop-color', '#6ee7b7');
-  const stop3 = document.createElementNS(svgNS, 'stop'); stop3.setAttribute('offset', '100%'); stop3.setAttribute('stop-color', '#60a5fa');
-  grad.appendChild(stop1); grad.appendChild(stop2); grad.appendChild(stop3);
-  defs.appendChild(grad);
-  svg.appendChild(defs);
-  document.body.appendChild(svg);
-}
-
-function initApp() {
-  // ensure global defs available before any SVG renders
-  try { injectGlobalSVGDefs(); } catch (e) { console.warn('inject defs failed', e); }
-  initNav();
-  initSparkyWidget();
-  const initial = hydrateNavFromHash() || 'dashboard';
-  // find button matching initial
-  const btn = document.querySelector(`.nav-btn[data-target="${initial}"]`);
-  if (btn) setActiveNav(btn);
-  loadRoute(initial);
-  // allow back/forward
-  window.addEventListener('hashchange', () => {
-    const t = hydrateNavFromHash();
-    const b = document.querySelector(`.nav-btn[data-target="${t}"]`);
-    if (b) setActiveNav(b);
-    loadRoute(t);
-  });
-}
-
-// wait for DOM
+// Instantiate on document load, checking if DOM is already ready to prevent module race conditions
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
+  document.addEventListener('DOMContentLoaded', () => {
+    window.equiliprismApp = new App();
+  });
 } else {
-  initApp();
+  window.equiliprismApp = new App();
 }
